@@ -15,7 +15,7 @@ use App\Models\User;
 class OdreMissionController extends Controller
 {
     //
-    public function index()
+    public function listMissionAgent()
     {
           $user = Auth::user();
 
@@ -34,7 +34,7 @@ class OdreMissionController extends Controller
             return view('ordre_missions.index', compact('missions'));
     }
 
-    public function validation()
+    public function listMissionAvalider()
     {
         $user = Auth::user();
         if ($this->userIsAgent($user))
@@ -43,7 +43,16 @@ class OdreMissionController extends Controller
                 $missions = OrdreMission::with('mission')
                 ->orWhereHas('agent', function($query) use ($agent) {
                     $query->where('superieur_id', $agent->id);
-                }) ->where('validation_agent', true)
+                })
+
+                ->orWhereHas('agent', function($query) use ($agent) {
+                    $query->whereIn('superieur_id', function($subQuery) use ($agent) {
+                        $subQuery->select('id')
+                                 ->from('agents')
+                                 ->where('superieur_id', $agent->id);
+                    });
+                })
+
                 ->get();
         }
         else

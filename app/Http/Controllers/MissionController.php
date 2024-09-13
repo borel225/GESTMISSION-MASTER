@@ -164,7 +164,7 @@ class MissionController extends Controller
                 ];
             }
 
-            $mission->agents()->sync($ordreMissionsData);
+            $mission->agents()->syncWithoutDetaching($ordreMissionsData);
 
         }
         else

@@ -48,8 +48,8 @@ Route::get('/get-montant/{typeMissionId}/{categorieAgentId}', [HomeController::c
 Route::get('/details', [HomeController::class, 'details'])->name('details');
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/ordre-missions', [OdreMissionController::class, 'index'])->name('ordre_missions.index');
-    Route::get('/validation', [OdreMissionController::class, 'validation'])->name('ordre_missions.validations');
+    Route::get('/ordre-missions', [OdreMissionController::class, 'listMissionAgent'])->name('ordre_missions.index');
+    Route::get('/validation', [OdreMissionController::class, 'listMissionAvalider'])->name('ordre_missions.validations');
     Route::get('/demande/{id}', [OdreMissionController::class, 'showDemandeForm'])->name('demande');
     Route::post('/submit-demande/{id}', [OdreMissionController::class, 'submitDemande'])->name('submit_demande');
 

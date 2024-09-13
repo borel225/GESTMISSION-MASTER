@@ -56,7 +56,22 @@ class Agent extends Model
         return $this->hasMany(Agent::class, 'superieur_id');
     }
 
+    public function getSupHierachique()
+    {
 
+        return $this->superieur->superieur;
+
+    }
+
+    public function getDirecteurAdjoint()
+    {
+        return $this->superieur->superieur->superieur;
+    }
+
+    public function getDirecteurGeneral()
+    {
+        return $this->superieur->superieur->superieur->superieur;
+    }
 
 }
 
