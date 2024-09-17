@@ -45,32 +45,48 @@ class Agent extends Model
         return $this->belongsToMany(Mission::class, 'ordre_missions', 'agent_id', 'mission_id');
     }
 
+    public function subordonnes()
+    {
+        return $this->hasMany(Agent::class, 'superieur_id');
+    }
+
     public function superieur()
     {
         return $this->belongsTo(Agent::class, 'superieur_id');
     }
 
     // Relation pour obtenir les subordonnés
-    public function subordonnes()
-    {
-        return $this->hasMany(Agent::class, 'superieur_id');
-    }
 
     public function getSupHierachique()
     {
-
-        return $this->superieur->superieur;
-
+        return $this->superieur;
     }
 
     public function getDirecteurAdjoint()
     {
-        return $this->superieur->superieur->superieur;
+        return $this->superieur->superieur;
     }
 
     public function getDirecteurGeneral()
     {
-        return $this->superieur->superieur->superieur->superieur;
+        return $this->superieur->superieur->superieur;
+    }
+
+    public function getUserLevel()
+    {
+        $directeurGeneral = $this->getDirecteurGeneral();
+        $directeurAdjoint = $this->getDirecteurAdjoint();
+        $superieur = $this->superieur;
+
+        if ($directeurGeneral && $directeurGeneral->id === $this->id) {
+            return 'Directeur Général';
+        } elseif ($directeurAdjoint && $directeurAdjoint->id === $this->id) {
+            return 'Directeur Adjoint';
+        } elseif ($superieur && $superieur->id === $this->id) {
+            return 'Superieur';
+        } else {
+            return 'Agent';
+        }
     }
 
 }
