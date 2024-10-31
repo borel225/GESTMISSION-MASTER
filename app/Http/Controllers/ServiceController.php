@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Direction;
 use App\Models\Fonction;
 use App\Models\Service;
 use Illuminate\Http\Request;
@@ -15,7 +16,7 @@ class ServiceController extends Controller
     public function index()
     {
         //
-        $services = Service::all();
+        $services = Service::with('direction')->get(); // Récupérer les services avec leur direction
         return view('services.index', compact('services'));
     }
 
@@ -24,8 +25,8 @@ class ServiceController extends Controller
      */
     public function create()
     {
-        //
-        return view('services.create');
+         $directions = Direction::All();
+        return view('services.create', compact('directions'));
     }
 
     /**
@@ -33,14 +34,12 @@ class ServiceController extends Controller
      */
     public function store(Request $request)
     {
-        //
         $request->validate([
             'libelle' => 'required|string|max:255',
+            'direction_id' => 'required|exists:directions,id',
         ]);
 
-        Service::create([
-            'libelle' => $request->input('libelle'),
-        ]);
+        Service::create($request->all());
 
         return redirect()->route('services.index')->with('success', 'Fonction créée avec succès.');
 
@@ -63,7 +62,8 @@ class ServiceController extends Controller
     {
         //
         $service = Service::findOrFail($id);
-        return view('services.edit', compact('service'));
+        $directions = Direction::All();
+        return view('services.edit', compact('service','directions'));
     }
 
     /**
@@ -74,12 +74,12 @@ class ServiceController extends Controller
         //
         $request->validate([
             'libelle' => 'required|string|max:255',
+            'direction_id' => 'required|exists:directions,id',
+
         ]);
 
         $service = Service::findOrFail($id);
-        $service->update([
-            'libelle' => $request->input('libelle'),
-        ]);
+        $service->update($request->all());
 
         return redirect()->route('services.index')->with('success', 'Fonction mise à jour avec succès.');
     }

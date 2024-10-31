@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Service extends Model
 {
     use HasFactory;
-    protected $fillable = ['libelle'];
+    protected $fillable = ['libelle','direction_id'];
 
 
 
@@ -16,5 +16,11 @@ class Service extends Model
     {
         return $this->hasMany(Agent::class, 'service_id');
     }
+
+    public function direction()
+    {
+        return $this->belongsTo(Direction::class);
+    }
+
 }
 

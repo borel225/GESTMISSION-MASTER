@@ -5,12 +5,18 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Fonction;
 use Illuminate\Http\Request;
+use Spatie\Permission\Traits\HasRoles;
 
 class FonctionController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+
+    public function __construct()
+    {
+        $this->middleware(['permission:lecture'])->only(['index', 'show']);
+        $this->middleware(['permission:ecriture'])->only(['create', 'store']);
+        $this->middleware(['permission:modification'])->only(['edit', 'update']);
+        $this->middleware(['permission:suppression'])->only('destroy');
+    }
     public function index()
     {
         //
@@ -24,7 +30,8 @@ class FonctionController extends Controller
     public function create()
     {
         //
-        return view('fonctions.create');
+        $fonction = new Fonction();
+        return view('fonctions.form', compact('fonction'));
     }
 
     /**
@@ -62,7 +69,7 @@ class FonctionController extends Controller
     {
         //
         $fonction = Fonction::findOrFail($id);
-        return view('fonctions.edit', compact('fonction'));
+        return view('fonctions.form', compact('fonction'));
 
     }
 

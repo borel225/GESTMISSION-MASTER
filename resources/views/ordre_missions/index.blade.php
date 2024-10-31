@@ -41,7 +41,7 @@
                             </td>
                         @else
                             <td>
-                                    <a href="{{ route('demande', ['id' => $ordreMission->id]) }}" class="btn btn-warning btn-sm">Imprimer</a>
+                                    <a href="{{ route('demande.mission.pdf', $ordreMission->id) }}" class="btn btn-secondary btn-sm">Télécharger PDF</a>
                             </td>
                         @endif
                     </tr>

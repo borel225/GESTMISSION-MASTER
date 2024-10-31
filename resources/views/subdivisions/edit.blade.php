@@ -1,0 +1,48 @@
+@extends('layouts.app')
+
+@section('content')
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <form action="{{ route('subdivisions.update', $subdivision) }}" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <div>
+                        <label for="libelle" class="form-label">Nom de la subdivision :</label>
+                        <input type="text" id="libelle" name="libelle" value="{{ old('libelle', $subdivision->libelle) }}" class="form-control" required>
+                        @error('libelle')
+                            <div style="color:red;">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div>
+                        <label for="parend_id" class="form-label">Subdivision parente :</label>
+                        <select id="parend_id" name="parend_id" class="form-control">
+                            <option value="">Aucune</option>
+                            @foreach ($subdivisions as $sub)
+                                <option value="{{ $sub->id }}" {{ $sub->id == $subdivision->parend_id ? 'selected' : '' }}>{{ $sub->libelle }}</option>
+                            @endforeach
+                        </select>
+                        @error('parend_id')
+                            <div style="color:red;">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="chef_id" class="form-label">Chef :</label>
+                        <select id="chef_id" name="chef_id" class="form-control">
+                            <option value="">Aucun</option>
+                            @foreach ($agents as $agent)  <!-- Assurez-vous de passer la liste des agents à la vue -->
+                                <option value="{{ $agent->id }}" {{ $agent->id == $subdivision->chef_id ? 'selected' : '' }}>{{ $agent->nom }}</option>
+                            @endforeach
+                        </select>
+                        @error('chef_id')
+                            <div style="color:red;">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <button type="submit" class="btn btn-primary mt-3">Modifier</button>
+                </form>
+            </div>
+        </div>
+    </div>
+@endsection

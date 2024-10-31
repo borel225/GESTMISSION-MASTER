@@ -9,9 +9,13 @@ use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+
+
+
+    public function __construct()
+    {
+        $this->middleware('permission:gestion-utilisateurs');
+    }
     public function index()
     {
         //
@@ -93,7 +97,7 @@ class UserController extends Controller
 
         $user = User::findOrFail($id);
         $user->update([
-            'name' => $validated['name'],
+            'name'  => $validated['name'],
             'email' => $validated['email'],
             'mappage' => $validated['mappage'],
         ]);
@@ -109,6 +113,7 @@ class UserController extends Controller
     public function destroy(string $id)
     {
         //
+
         $user = User::findOrFail($id);
         $user->delete();
 

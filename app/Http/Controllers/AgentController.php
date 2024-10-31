@@ -15,6 +15,8 @@ class AgentController extends Controller
     /**
      * Display a listing of the resource.
      */
+
+
     public function index()
     {
         //
@@ -32,7 +34,7 @@ class AgentController extends Controller
         $userConnect = Auth::user();
         $agents = Agent::where('matricule', '!=',  $userConnect)->get();
         $categories = CategorieAgent::all();
-        $services = Service::all();
+        $services = Service::with('direction')->get();
         $fonctions = Fonction::all();
         return view('agents.create', compact('services', 'fonctions','categories','agents'));
     }
@@ -48,20 +50,24 @@ class AgentController extends Controller
             'fonction_id' => 'required|integer',
             'superieur_id' => 'nullable|integer',
             'categorie_agent_id' => 'required|integer',
+            'direction_id' => 'required|exists:directions,id',
             'nom' => 'required|string|max:255',
             'prenom' => 'required|string|max:255',
             'matricule' => 'required|string|max:255',
+            'email' => 'nullable|string',
 
         ]);
 
         Agent::create([
             'superieur_id' => $request->superieur_id,
+            'direction_id' => $request->direction_id,
             'categorie_agent_id' => $request->categorie_agent_id,
             'service_id' => $request->service_id,
             'fonction_id' => $request->fonction_id,
             'nom' => $request->input('nom'),
             'prenom' => $request->input('prenom'),
             'matricule' => $request->input('matricule'),
+            'email' => $request->input('email'),
         ]);
 
         return redirect()->route('agents.index')->with('success', 'Agent créée avec succès.');
@@ -104,20 +110,24 @@ class AgentController extends Controller
             'fonction_id' => 'required|integer',
             'superieur_id' => 'nullable|integer',
             'categorie_agent_id' => 'required|integer',
+            'direction_id' => 'required|exists:directions,id',
             'nom' => 'required|string|max:255',
             'prenom' => 'required|string|max:255',
             'matricule' => 'required|string|max:255',
+            'email' => 'nullable|string',
         ]);
 
         $agent = Agent::findOrFail($id);
         $agent->update([
             'superieur_id' => $request->superieur_id,
+            'direction_id' => $request->direction_id,
             'categorie_agent_id' => $request->categorie_agent_id,
             'service_id' => $request->service_id,
             'fonction_id' => $request->fonction_id,
             'nom' => $request->input('nom'),
             'prenom' => $request->input('prenom'),
-            'matricule' => $request->input('matricule')
+            'matricule' => $request->input('matricule'),
+            'email' => $request->input('email'),
         ]);
 
         return redirect()->route('agents.index')->with('success', 'Agent mise à jour avec succès.');

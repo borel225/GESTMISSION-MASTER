@@ -12,6 +12,13 @@
                     <label for="libelle">Nom du service</label>
                     <input type="text" name="libelle" id="libelle" class="form-control" required>
                 </div>
+                <label for="direction_id" class="form-label">Direction</label>
+                    <select name="direction_id" id="direction_id" class="form-control">
+                        @foreach ($directions as $direction)
+                            <option value="{{ $direction->id }}">{{ $direction->libelle }}</option>
+                        @endforeach
+                    </select>
+
                 <button type="submit" class="btn btn-primary mt-2">Enregistrer</button>
             </div>
         </div>

@@ -12,11 +12,11 @@
                     <div class="card-body">
                         <p class="card-text">Nom et Prénoms: {{ $agent->nom }} {{$agent->prenom}}</p>
                         <p class="card-text">Matricule: {{ $agent->matricule}}</p>
+                        <p class="card-text">Direction: {{ $agent->service->direction->libelle}}</p>
                         <p class="card-text">Service: {{ $agent->service->libelle}}</p>
                         <p class="card-text">Fonction: {{ $agent->fonction->libelle}}</p>
                     </div>
                 </div>
-
                 <div class="card mt-3">
                     <div class="card-header">Informations de la Mission</div>
                     <div class="card-body">
@@ -31,27 +31,32 @@
                 <div class="card mt-3">
                     <div class="card-header">Détails du calcul - Perdiem et carburant</div>
                     <div class="card-body">
+                        @php
+                            $dateDepart = \Carbon\Carbon::parse($ordreMission->mission->date_depart);
+                            $dateRetour = \Carbon\Carbon::parse($ordreMission->mission->date_retour);
+                            $nombreJours = $dateDepart->diffInDays($dateRetour) + 1;
+                        @endphp
                         <div class="row">
                             <div class="col-md-6">
                                 <h5>Détails du Perdiem</h5>
                                 <ul>
-                                    <li>Type de mission : {{ $ordreMission->typeMission->libelle ? : '' }}</li>
-                                    <li>Catégorie de l'agent : {{ $ordreMission->agent->categorieAgent ?  : 'Aucune cat'}}</li>
-                                    <li>Montant journalier : {{ number_format($ordreMission->parametrePerdiem->montant, 2) ? : '' }} FCFA</li>
+                                    <li>Type de mission : {{ $ordreMission->typeMission->libelle }}</li>
+                                    <li>Catégorie de l'agent : {{ $ordreMission->agent->categorieAgent->libelle  }}</li>
+                                    <li>Montant journalier : {{ number_format($ordreMission->getParametrePerdiem()->montant, 0) }} FCFA</li>
                                     <li>Date de départ : {{ $ordreMission->mission->date_depart }}</li>
                                     <li>Date de retour : {{ $ordreMission->mission->date_retour }}</li>
-                                    <li>Nombre de jours : {{ $ordreMission->date_depart->diffInDays($ordreMission->date_retour) + 1 }}</li>
-                                    <li>Calcul : {{ number_format($ordreMission->parametrePerdiem->montant, 2) }} x {{ $ordreMission->date_depart->diffInDays($ordreMission->date_retour) + 1 }} jours</li>
-                                    <li><strong>Total Perdiem : {{ number_format($ordreMission->montant_perdiem, 2) }} FCFA</strong></li>
+                                    <li>Nombre de jours : {{ $nombreJours }}</li>
+                                    <li>Calcul : {{ number_format($ordreMission->getParametrePerdiem()->montant, 0) }} x {{ $nombreJours }} jours</li>
+                                    <li><strong>Total Perdiem : {{ number_format($ordreMission->perdiem, 0) }} FCFA</strong></li>
                                 </ul>
                             </div>
                             <div class="col-md-6">
                                 <h5>Détails du Carburant</h5>
                                 <ul>
                                     <li>Distance : {{ $ordreMission->distance }} Km</li>
-                                    <li>Nombre de jours : {{ $ordreMission->date_depart->diffInDays($ordreMission->date_retour) + 1 }}</li>
-                                    <li>Calcul : {{ $ordreMission->distance }} km x {{ $ordreMission->date_depart->diffInDays($ordreMission->date_retour) + 1 }} jours</li>
-                                    <li><strong>Total Carburant : {{ number_format($ordreMission->montant_carburant, 2) }} FCFA</strong></li>
+                                    <li>Nombre de jours : {{ $nombreJours }}</li>
+                                    <li>Calcul : {{ $ordreMission->distance }} km x {{ $nombreJours }} jours</li>
+                                    <li><strong>Total Carburant : {{ number_format($ordreMission->carburant, 0) }} FCFA</strong></li>
                                 </ul>
                             </div>
                         </div>
@@ -59,74 +64,78 @@
                             <div class="col-md-12">
                                 <h5>Récapitulatif</h5>
                                 <ul>
-                                    <li>Total Perdiem : {{ number_format($ordreMission->montant_perdiem, 2) }} FCFA</li>
-                                    <li>Total Carburant : {{ number_format($ordreMission->montant_carburant, 2) }} FCFA</li>
-                                    <li><strong>Montant Total de la Mission : {{ number_format($ordreMission->montant_total, 2) }} FCFA</strong></li>
+                                    <li>Total Perdiem : {{ number_format($ordreMission->perdiem, 0) }} FCFA</li>
+                                    <li>Total Carburant : {{ number_format($ordreMission->carburant, 0) }} FCFA</li>
+                                    <li><strong>Montant Total de la Mission : {{ $total }} FCFA</strong></li>
                                 </ul>
                             </div>
                         </div>
                     </div>
                 </div>
-                @endif
-                <form action="{{ route('submit_demande', ['id' => $ordreMission->id]) }}" method="POST" class="mt-3">
-                    @csrf
-                    <div class="row">
-                        <div class="col-md-3">
-                            <div class="card mb-3 text-center">
-                                <div class="card-header text-center"><h5>Signature du demandeur</h5></div>
-                                <div class="card-body">
-                                    <h5 class="card-title">Cocher</h5>
-                                    <input class="form-check-input" type="checkbox" id="validation_agent" name="validation_agent" value="1"
-                                           {{ $userLevel == 'agent' ? '' : 'disabled' }}
-                                           {{ $ordreMission->validation_agent ? 'checked' : '' }}>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-3">
-                            <div class="card mb-3 text-center">
-                                <div class="card-header text-center"><h5>Avis Supérieur Hiérarchique</h5></div>
-                                <div class="card-body">
-                                    <h5 class="card-title">Cocher</h5>
-                                    <input class="form-check-input" type="checkbox" id="validation_sup_hier" name="validation_sup_hier" value="1"
-                                           {{ $userLevel == 'sup_hier' ? '' : 'disabled' }}
-                                           {{ $ordreMission->validation_sup_hier ? 'checked' : '' }}>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-3">
-                            <div class="card mb-3 text-center">
-                                <div class="card-header text-center"><h5>Avis du Directeur Adjoint</h5></div>
-                                <div class="card-body">
-                                    <h5 class="card-title">Cocher</h5>
-                                    <input class="form-check-input" type="checkbox" id="validation_da" name="validation_da" value="1"
-                                           {{ $userLevel == 'da' ? '' : 'disabled' }}
-                                           {{ $ordreMission->validation_da ? 'checked' : '' }}>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-3">
-                            <div class="card mb-3 text-center">
-                                <div class="card-header text-center"><h5>Avis du Directeur du Département</h5></div>
-                                <div class="card-body">
-                                    <h5 class="card-title">Cocher</h5>
-                                    <input class="form-check-input" type="checkbox" id="validation_dd" name="validation_dd" value="1"
-                                           {{ $userLevel == 'dd' ? '' : 'disabled' }}
-                                           {{ $ordreMission->validation_dd ? 'checked' : '' }}>
-                                </div>
+            @endif
+            <form action="{{ route('submit_demande', ['id' => $ordreMission->id]) }}" method="POST" class="mt-3">
+                @csrf
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="card mb-3 text-center">
+                            <div class="card-header text-center"><h5>Signature du demandeur</h5></div>
+                            <div class="card-body">
+                                <h5 class="card-title">Cocher</h5>
+                                <input class="form-check-input" type="checkbox" id="validation_agent" name="validation_agent" value="1"
+                                       {{ $ordreMission->validation_agent ? 'checked disabled' : ($userLevel == 'agent' || $userAgent->id == $agent->id ? '' : 'disabled') }}>
                             </div>
                         </div>
                     </div>
+                    <div class="col-md-3">
+                        <div class="card mb-3 text-center">
+                            <div class="card-header text-center"><h5>Avis Supérieur Hiérarchique</h5></div>
+                            <div class="card-body">
+                                <h5 class="card-title">Cocher</h5>
+                                <input class="form-check-input" type="checkbox" id="validation_sup_hier" name="validation_sup_hier" value="1"
+                                       {{ $ordreMission->validation_sup_hier ?  'checked disabled' : ($userLevel == 'sup_hier' && $ordreMission->validation_agent ? '' : 'disabled') }}>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card mb-3 text-center">
+                            <div class="card-header text-center"><h5>Avis du Directeur Adjoint</h5></div>
+                            <div class="card-body">
+                                <h5 class="card-title">Cocher</h5>
+                                <input class="form-check-input" type="checkbox" id="validation_da" name="validation_da" value="1"
+                                       {{ $ordreMission->validation_da ? 'checked disabled' : ($userLevel == 'da' && $ordreMission->validation_sup_hier ? '' : 'disabled') }}>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card mb-3 text-center">
+                            <div class="card-header text-center"><h5>Avis du Directeur du Département</h5></div>
+                            <div class="card-body">
+                                <h5 class="card-title">Cocher</h5>
+                                <input class="form-check-input" type="checkbox" id="validation_dd" name="validation_dd" value="1"
+                                       {{ $ordreMission->validation_dd ? 'checked disabled' : ($userLevel == 'dd' && $ordreMission->validation_da ? '' : 'disabled') }}>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="card mb-3 text-center">
+                            <div class="card-header text-center"><h5>RESERVE A LA DIRECTION GENERALE</h5></div>
+                            <div class="card-body">
+                                <h5 class="card-title">Cocher</h5>
+                                <input class="form-check-input" type="checkbox" id="validation_dg" name="validation_dg" value="1"
+                                {{ $ordreMission->validation_dg ? 'checked disabled' : ($userLevel =='dg' && $ordreMission->validation_dg ? 'disabled' : '') }}>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @if ($ordreMission->statut !== 'demande validée')
                     <div class="d-flex justify-content-center mt-3">
                         <button type="submit" class="btn btn-primary">Soumettre la Demande</button>
                     </div>
-                </form>
+                @endif
+            </form>
             </div>
         </div>
     </div>
 </div>
-
 
 @endsection

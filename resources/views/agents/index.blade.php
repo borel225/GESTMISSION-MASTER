@@ -3,13 +3,17 @@
 @section('content')
 <div class="container">
     <h1>Liste des Agents</h1>
+{{--Pour les administrateurs uniquement--}}
+    @role('Administrateur')
     <a href="{{ route('agents.create') }}" class="btn btn-primary">Créer un agent</a>
+    @endrole
     <table class="table mt-3">
         <thead>
             <tr>
                 <th>Nom</th>
                 <th>Prénom</th>
                 <th>Matricule</th>
+                <th>Direction</th>
                 <th>Service</th>
                 <th>Fonction</th>
                 <th>Supérieur</th>
@@ -22,6 +26,7 @@
                 <td>{{ $agent->nom }}</td>
                 <td>{{ $agent->prenom }}</td>
                 <td>{{ $agent->matricule }}</td>
+                <td>{{ $agent->service->direction ? $agent->service->direction->libelle : 'Aucune direction' }}</td>
                 <td>{{ $agent->service->libelle }}</td>
                 <td>{{ $agent->fonction->libelle }}</td>
                 <td> @if($agent->superieur)

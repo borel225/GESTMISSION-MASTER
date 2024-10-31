@@ -7,7 +7,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ config('app.name', 'Gestmission-master') }}</title>
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.bunny.net">
@@ -22,10 +22,12 @@
 
 <body>
     <div id="app">
+
+        @auth
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/') }}">
-                    {{ config('app.name', 'Laravel') }}
+                    <img src="{{ asset('img/logo gestmission.png') }}" alt="Logo" style="height: 50px;">
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
                     <span class="navbar-toggler-icon"></span>
@@ -41,7 +43,9 @@
                             </a>
                             <ul class="dropdown-menu">
                               <li><a class="dropdown-item" href="{{ route('users.index') }}">Liste utilisateurs</a></li>
+                              <li><a class="dropdown-item" href="{{ route('roles.documentation') }}">Documentations</a></li>
                               <li><a class="dropdown-item" href="{{ route('roles.index') }}">Roles</a></li>
+                              <li><a class="dropdown-item" href="{{ route('permissions.index') }}">Permissions</a></li>
                               <li><a class="dropdown-item" href="{{ route('parametre_perdiems.index') }}">Parametre Perdiem</a></li>
                             </ul>
                           </li>
@@ -53,6 +57,7 @@
                             </a>
                             <ul class="dropdown-menu">
                               <li><a class="dropdown-item" href="{{ route('fonctions.index') }}">Fonctions</a></li>
+                              <li><a class="dropdown-item" href="{{ route('directions.index') }}">Directions</a></li>
                               <li><a class="dropdown-item" href="{{ route('services.index') }}">Services</a></li>
                               <li><a class="dropdown-item" href="{{ route('lieus.index') }}">Lieux</a></li>
                               <li><a class="dropdown-item" href="{{ route('agents.index') }}">Agents</a></li>
@@ -67,19 +72,20 @@
                             </a>
                             <ul class="dropdown-menu">
                               <li><a class="dropdown-item" href="{{ route('missions.create') }}">Créer une mission</a></li>
-                              <li><a class="dropdown-item" href="{{ route('missions.index') }}">Liste des mission </a></li>
-                              <li><a class="dropdown-item" href="#">Statut de la mission</a></li>
+                              <li><a class="dropdown-item" href="{{ route('missions.index') }}">Liste des missions </a></li>
+                              <li><a class="dropdown-item" href="{{ route('ordre_missions.index') }}">Mes missions</a></li>
+                              <li><a class="dropdown-item" href="{{ route('ordreMission') }}">Ordre de mission</a></li>
                             </ul>
                           </li>
 
                           <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                {{ __('Mes ordres de missions') }}
+                                {{ __('Validations') }}
                             </a>
                             <ul class="dropdown-menu">
-                              <li><a class="dropdown-item" href="{{ route('ordre_missions.index') }}">Mes missions</a></li>
                               <li><a class="dropdown-item" href="{{ route('ordre_missions.validations')}}">Mes validations de missions</a></li>
-                              <li><a class="dropdown-item" href="#">Validation DFC </a></li>
+                              <li><a class="dropdown-item" href="{{ route('ordre_missions.evaluations') }}">Validation Cellule Mission</a></li>
+                              <li><a class="dropdown-item" href="{{ route('evalutionDFC')}}">Validation DFC </a></li>
                             </ul>
                           </li>
 
@@ -112,14 +118,14 @@
                                         @csrf
                                     </form>
                                 </div>
+
                             </li>
                         @endguest
                     </ul>
                 </div>
             </div>
         </nav>
-
-
+        @endauth
         <main class="py-4">
             <div class="container">
                         @if (session('success'))

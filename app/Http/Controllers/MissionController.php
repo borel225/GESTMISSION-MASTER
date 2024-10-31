@@ -7,10 +7,12 @@ use App\Models\Lieu;
 use Illuminate\Http\Request;
 use App\Models\Mission;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Log;
 use App\Models\Agent;
 use App\Models\TypeMission;
+use App\Notifications\MissionAdded;
+use Illuminate\Support\Facades\Auth;
+
+
 
 
 class MissionController extends Controller
@@ -35,6 +37,7 @@ class MissionController extends Controller
         $agents = Agent::all();
         $lieus = Lieu::all();
         return view('missions.create', compact('lieus','agents','typesMissions'));
+
     }
 
     /**
@@ -43,7 +46,6 @@ class MissionController extends Controller
     public function store(Request $request)
     {
         //
-
         $validated = $request->validate([
             'libelle' => 'required|string|max:255',
             'objectif' => 'required|string|max:255',
@@ -56,7 +58,8 @@ class MissionController extends Controller
             'observation' => 'nullable|string',
            'participants' => 'nullable|string',
            'distance' => 'nullable|numeric|min:0',
-           'type_mission_id' => 'required|exists:type_de_missions,id'
+           'type_mission_id' => 'required|exists:type_de_missions,id',
+
         ]);
 
         // Traitement du fichier
@@ -65,7 +68,6 @@ class MissionController extends Controller
             $file = $request->file('tdr');
             $tdrPath = $file->store('tdrs', 'public'); // Enregistre dans le disque public
         }
-
         $mission = Mission::create($validated);
 
                 // Traitement des participants
@@ -83,7 +85,18 @@ class MissionController extends Controller
 
                 // Ajouter les participants avec les nouvelles propriétés
                 $mission->agents()->attach($ordreMissionsData);
+
+                 // Envoyer la notification par email à chaque agent
+                 foreach ($agentIds as $agentId) {
+                    $agent = Agent::find($agentId);
+                    if ($agent) {
+                        $agent->notify(new MissionAdded($mission));
+                    }
+                }
+
+
             }
+
 
         return redirect()->route('missions.index')->with('success', 'Mission créée avec succès.');
 
@@ -92,9 +105,11 @@ class MissionController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Request $request,string $id)
     {
-
+        if (!$request->hasValidSignature() && !Auth::check()) {
+            abort(401);
+        }
         $mission = Mission::with(['destinationDepart', 'destinationArrivee'])->findOrFail($id);
         return view('missions.show', compact('mission'));
     }
@@ -104,12 +119,13 @@ class MissionController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        //s
         $typesMissions = TypeMission::all();
         $mission = Mission::findOrFail($id);
         $lieus = Lieu::all();
         $agents = Agent::all();
         return view('missions.edit', compact('mission', 'lieus','agents','typesMissions'));
+
     }
 
     /**
@@ -117,7 +133,6 @@ class MissionController extends Controller
      */
     public function update(Request $request, string $id)
     {
-
 
         $validated = $request->validate([
             'libelle' => 'required|string|max:255',
@@ -132,6 +147,7 @@ class MissionController extends Controller
             'participants' => 'nullable|string',
             'distance' => 'nullable|numeric|min:0',
             'type_mission_id' => 'required|exists:type_de_missions,id',
+
         ]);
 
         $mission = Mission::findOrFail($id);
@@ -156,6 +172,7 @@ class MissionController extends Controller
 
         if ($request->filled('participants')) {
             $agentIds = explode(',', $request->participants);
+
             $ordreMissionsData = [];
             foreach ($agentIds as $agentId) {
                 $ordreMissionsData[$agentId] = [
@@ -176,6 +193,7 @@ class MissionController extends Controller
                 ]);
             });
         }
+
 
         return redirect()->route('missions.index')->with('success', 'Mission mise à jour avec succès.');
 
@@ -199,4 +217,6 @@ class MissionController extends Controller
 
         return redirect()->route('missions.index')->with('success', 'Mission supprimée avec succès !');
     }
+
+
 }

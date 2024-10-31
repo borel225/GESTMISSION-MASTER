@@ -5,9 +5,15 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 
 class RoleController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('permission:gestion-roles');
+    }
     /**
      * Display a listing of the resource.
      */
@@ -89,4 +95,30 @@ class RoleController extends Controller
 
         return redirect()->route('roles.index')->with('success', 'Role deleted successfully');
     }
+
+        public function editPermissions(Role $role)
+    {
+        $permissions = Permission::all();
+        return view('roles.edit_permissions', compact('role', 'permissions'));
+    }
+
+    public function updatePermissions(Request $request, Role $role)
+    {
+        $request->validate(['permissions' => 'array']);
+
+         // Convertir les noms des permissions en instances
+        $permissions = Permission::whereIn('name', $request->permissions)->get();
+
+        // Sync permissions
+        $role->syncPermissions($request->permissions);
+
+        return redirect()->route('roles.index')->with('success', 'Permissions updated successfully.');
+    }
+
+    public function documentation()
+    {
+        return view('roles.documentation');
+    }
+
+
 }

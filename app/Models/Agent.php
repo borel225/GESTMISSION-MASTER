@@ -4,14 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
 
 class Agent extends Model
 {
     use HasFactory;
+    use Notifiable;
 
 
     protected $fillable = ['nom',
                            'prenom',
+                           'email',
                            'matricule',
                            'service_id',
                            'fonction_id',
@@ -30,7 +33,9 @@ class Agent extends Model
         return $this->belongsTo(Fonction::class, 'fonction_id');
     }
 
-    public function categogieAgent()
+
+
+    public function categorieAgent ()
     {
         return $this->belongsTo(CategorieAgent::class, 'categorie_agent_id');
     }
@@ -87,6 +92,11 @@ class Agent extends Model
         } else {
             return 'Agent';
         }
+    }
+
+        public function routeNotificationForMail()
+    {
+        return $this->email;
     }
 
 }

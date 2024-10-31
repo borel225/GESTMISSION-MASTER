@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\ValidationException;
+use PhpParser\Node\Stmt\TryCatch;
 
 class Mission extends Model
 {
@@ -22,7 +23,7 @@ class Mission extends Model
     ];
       public function ordresMission()
     {
-        return $this->hasMany(OdreMission::class, 'mission_id');
+        return $this->hasMany(OrdreMission::class, 'mission_id');
     }
 
     public function agents()
@@ -40,14 +41,18 @@ class Mission extends Model
     }
 
 
-    public static function boot()
-    {
-        parent::boot();
+            public static function boot()
+        {
+            parent::boot();
 
-        static::saving(function ($model) {
-            if ($model->destination_arrivee_id === $model->destination_depart_id) {
-                throw new ValidationException('destination_depart_id et destination_arrivee_id ne peuvent pas être identiques.');
-            }
-        });
-    }
+            static::saving(function ($model) {
+                if ($model->destination_arrivee_id === $model->destination_depart_id) {
+                    throw ValidationException::withMessages([
+                        'destination' => 'Destination de départ et Destination arrivée ne peuvent pas être identiques.',
+                    ]);
+                }
+            });
+        }
+
 }
+

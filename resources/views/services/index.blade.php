@@ -10,6 +10,7 @@
         <thead>
             <tr>
                 <th>Nom</th>
+                <th>Direction</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -17,6 +18,7 @@
             @foreach ($services as $service)
                 <tr>
                     <td>{{ $service->libelle }}</td>
+                    <td>{{ $service->direction ? $service->direction->libelle : 'Aucune direction' }}</td>
                     <td>
                         <a href="{{ route('services.edit', $service->id) }}" class="btn btn-warning">Modifier</a>
                         <form action="{{ route('services.destroy', $service->id) }}" method="POST" style="display:inline;">

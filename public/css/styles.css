@@ -1,0 +1,83 @@
+.header-table {
+    width: 100%; /* Utiliser toute la largeur disponible */
+    margin-bottom: 20px;
+}
+.armoirie{
+    max-width: 100px; /* Ajustez la taille des images */
+    height: auto; /* Garder les proportions */
+}
+.logo
+{
+    max-width: 180px; /* Ajustez la taille des images */
+    height: auto; /* Garder les proportions */
+}
+.footer {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 12px;
+}
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    margin-bottom: 5px;
+    margin-top: 0px
+}
+.title-container {
+    text-align: center; /* Centre le contenu à l'intérieur */
+}
+h4 {
+    display: inline-block; /* Réduit la largeur au texte uniquement */
+    color: #070707; /* Couleur grise similaire à Bootstrap */
+    border: double 3px #0a0a0a; /* Double bordure */
+    padding: 5px; /* Réduit l'espacement entre le texte et les bordures */
+    padding-left: 20px;
+    padding-right: 20px;
+    font-size: 20px;
+}
+.container {
+    margin: 0 auto;
+    width: 100%;
+}
+.card {
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+    margin-bottom: 20px;
+    padding: 20px;
+}
+.card-header {
+    background-color: #f8f9fa;
+    font-weight: bold;
+    border-bottom: 1px solid #dee2e6;
+}
+.card-body {
+    padding: 5px;
+}
+.text-center {
+    text-align: center;
+}
+.mb-3 {
+    margin-bottom: 1rem;
+}
+.signature-section {
+ width: 100%; /* Assurez-vous que le tableau occupe toute la largeur */
+ border-collapse: collapse;
+}
+
+.signature-card {
+    text-align: center; /* Centre le texte à l'intérieur de chaque cellule */
+    border: 1px solid #dee2e6;
+    padding: 10px; /* Espacement interne */
+}
+ul {
+    list-style-type: none; /* Pour supprimer les puces */
+    padding: 0;
+}
+li {
+    margin-bottom: 5px;
+}
+.date{
+    text-align:right;
+}
+tr .p{
+        font-size:5px;
+    }

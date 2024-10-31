@@ -13,6 +13,16 @@
                     <label for="libelle">Nom de la fonction</label>
                     <input type="text" name="libelle" id="libelle" class="form-control" value="{{ $service->libelle }}" required>
                 </div>
+                <div>
+                    <label for="direction_id" class="label-form">Direction</label>
+                    <select id="direction_id" name="direction_id" class="form-control" required>
+                        @foreach ($directions as $direction)
+                            <option value="{{ $direction->id }}" {{ $direction->id == $service->direction_id ? 'selected' : '' }}>
+                                {{ $direction->libelle }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
                 <button type="submit" class="btn btn-primary mt-2">Enregistrer</button>
             </div>
         </div>
